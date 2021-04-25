@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from "react";
 import "./card.css";
-import img from "../img/delete.png";
-import up from "../img/up.png";
-import down from "../img/down.png";
 import AccountCard from "./AccountCard";
+import React, { useState, useEffect } from "react";
+
 const Card = (props) => {
-  const [showAccount, setShowAccount] = useState(false);
+  const [show, setShow] = useState(false);
   return (
     <div className="cardWrap">
-      <div className={props.cssClass ? props.cssClass : "card"}>
-        <h5>Name : {props.n.name}</h5>
-        <p>Email : {props.n.email}</p>
-        <p>Phone : {props.n.phone}</p>
-        <p>Id : {props.n._id}</p>
+      <div className="card">
+        <h5>User name :{props.n.name}</h5>
+        <p>email : {props.n.email}</p>
+        <p>phone : {props.n.phone}</p>
+        <p>User ID : {props.n._id}</p>
       </div>
-      {showAccount && <AccountCard id={props.n._id} />}
-
-      <button onClick={() => setShowAccount(!showAccount)}>Show Account</button>
+      {show && <AccountCard id={props.n._id} />}
+      <button onClick={() => setShow(!show)}>Show account</button>
     </div>
   );
 };
