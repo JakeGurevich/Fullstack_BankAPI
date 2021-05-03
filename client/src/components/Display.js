@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/api";
 
 import axios from "axios";
 import Card from "./Card";
+import User from "./User.component";
 
 const Display = () => {
   const [products, setProducts] = useState([]);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [newProducts, setNewProduct] = useState([]);
-  const [deletedProducts, setDeletedProducts] = useState([]);
-  const [addedToCart, setAddedToCart] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
     getProducts();
     // getCart();
-  }, [newProducts, deletedProducts, addedToCart]);
+  }, []);
   const getProducts = async () => {
-    let res = await axios.get("http://localhost:5000/api/users");
+    let res = await api.get("/users");
     console.log(res.data);
     setProducts(res.data);
   };
@@ -30,7 +28,14 @@ const Display = () => {
   return (
     <div className="App">
       Users:
-      <div className="wrap"> {displayCards}</div>
+      {showAdmin ? <div className="wrap"> {displayCards}</div> : <User />}
+      <button
+        onClick={() => {
+          setShowAdmin(!showAdmin);
+        }}
+      >
+        Add User
+      </button>
     </div>
   );
 };

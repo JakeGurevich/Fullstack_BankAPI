@@ -2,6 +2,7 @@ import express from "express";
 import User from "../model/users.js";
 import Account from "../model/accounts.js";
 import Transaction from "../model/transactions.js";
+import accountController from "../controllers/account.controller.js";
 
 // import {
 //   getUsers,
@@ -47,6 +48,7 @@ router.post("/", async (req, res) => {
   console.log(req.body);
   try {
     const newUser = new User(req.body);
+
     const result = await newUser.save();
     const newAccount = new Account();
     newAccount.user_id = newUser._id;
@@ -70,53 +72,54 @@ router.post("/account", async (req, res) => {
   }
 });
 router.patch("/update/:id", async (req, res) => {
-  try {
-    const id = `${req.params.id}`;
-    const filter = { user_id: id };
-    const update = { ...req.body };
-    update.credit = Number(update.credit);
-    console.log(filter, update.credit);
-    const accountToUpdate = await Account.findOne(filter);
-    console.log(accountToUpdate);
-    let toUpdate = false;
+  accountController.update(req, res);
+  //   try {
+  //     const id = `${req.params.id}`;
+  //     const filter = { user_id: id };
+  //     const update = { ...req.body };
+  //     update.credit = Number(update.credit);
+  //     console.log(filter, update.credit);
+  //     const accountToUpdate = await Account.findOne(filter);
 
-    if (!accountToUpdate) {
-      res.status(500).send("account not found");
-    }
-    console.log(update.cash, accountToUpdate.cash, accountToUpdate.credit);
-    if (update.cash + accountToUpdate.cash + accountToUpdate.credit >= 0) {
-      update.cash += accountToUpdate.cash;
-      toUpdate = true;
-    } else if (update.cash) {
-      res.status(500).send("Not enough funds");
-    }
-    if (update.credit && update.credit + accountToUpdate.credit >= 0) {
-      update.credit += accountToUpdate.credit;
-      toUpdate = true;
-    } else if (update.credit) {
-      res.status(500).send("Credit has to be greater than zero");
-    }
-    if (toUpdate) {
-      const account = await Account.findOneAndUpdate(filter, update, {
-        new: true,
-      });
-      if (!account) {
-        console.log("Error : no account found");
-        res.status(404).send("Error : no account found");
-      }
-      console.log(account);
-      const newTransaction = new Transaction({
-        from_user_id: id,
-        ammount: req.body.cash || req.body.credit,
-        transaction_type: "adding cash",
-      });
-      const result = await newTransaction.save();
-      console.log(result);
-      res.status(201).send(account);
-    }
-  } catch (e) {
-    res.status(400).send({ error: e.message });
-  }
+  //     let toUpdate = false;
+
+  //     if (!accountToUpdate) {
+  //       return res.status(500).send("account not found");
+  //     }
+  //     console.log(update.cash, accountToUpdate.cash, accountToUpdate.credit);
+  //     if (accountToUpdate.cash + accountToUpdate.credit > update.cash) {
+  //       update.cash += accountToUpdate.cash;
+  //       toUpdate = true;
+  //     } else if (update.cash) {
+  //       res.status(500).send("Not enough funds");
+  //     }
+  //     if (update.credit && update.credit + accountToUpdate.credit >= 0) {
+  //       update.credit += accountToUpdate.credit;
+  //       toUpdate = true;
+  //     } else if (update.credit) {
+  //       res.status(500).send("Credit has to be greater than zero");
+  //     }
+  //     if (toUpdate) {
+  //       const account = await Account.findOneAndUpdate(filter, update, {
+  //         new: true,
+  //       });
+  //       if (!account) {
+  //         console.log("Error : no account found");
+  //         res.status(404).send("Error : no account found");
+  //       }
+  //       console.log(account);
+  //       const newTransaction = new Transaction({
+  //         from_user_id: id,
+  //         ammount: req.body.cash || req.body.credit,
+  //         transaction_type: "adding cash",
+  //       });
+  //       const result = await newTransaction.save();
+  //       console.log(result);
+  //       res.status(201).send(account);
+  //     }
+  //   } catch (e) {
+  //     res.status(400).send({ error: e.message });
+  //   }
 });
 router.patch("/transfer", async (req, res) => {
   try {

@@ -1,11 +1,13 @@
 import "./card.css";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import api from "../api/api";
 
 const AccountCard = (props) => {
   const [account, setAccount] = useState({});
-  const [cash, setCash] = useState(0);
+  const [cash, setCash] = useState();
   const [credit, setCredit] = useState(0);
+  const [amount, setAmount] = useState(0);
   const [update, setUpdate] = useState(false);
   useEffect(() => {
     getAccount();
@@ -13,22 +15,30 @@ const AccountCard = (props) => {
   }, [update]);
   const getAccount = async () => {
     const id = props.id;
-    let res = await axios.get(`http://localhost:5000/api/users/account/${id}`);
+    let res = await api.get(`/users/account/${id}`);
     console.log(res.data);
     setAccount(res.data);
   };
   const addCredit = async () => {
     console.log(cash);
     const id = props.id;
-    let res = await axios.patch(
-      `http://localhost:5000/api/users/update/${id}`,
-      {
-        credit,
-      }
-    );
+    let res = await api.patch(`/users/update/${id}`, {
+      credit: amount,
+    });
 
     console.log(res.data);
-    setCredit(res.data.credit);
+    // setCredit(res.data.credit);
+    setUpdate(!update);
+  };
+  const addCash = async () => {
+    console.log(cash);
+    const id = props.id;
+    let res = await api.patch(`/users/update/${id}`, {
+      cash: amount,
+    });
+
+    console.log(res.data);
+    // setCredit(res.data.credit);
     setUpdate(!update);
   };
 
@@ -41,11 +51,11 @@ const AccountCard = (props) => {
         <p>Credit :{account.credit}</p>
         <div className="admin">
           <input
-            value={credit}
-            onChange={(e) => setCredit(e.target.value)}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
           ></input>
           <button onClick={() => addCredit()}>Add Credit</button>
-          <span>{credit}</span>
+          <button onClick={() => addCash()}>Add Cash</button>
         </div>
       </div>
 

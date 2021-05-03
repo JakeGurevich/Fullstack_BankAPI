@@ -17,6 +17,10 @@ const Transaction = mongoose.model("transactions", {
     type: Number,
     required: true,
   },
+  date: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 export default Transaction;
